@@ -18,6 +18,10 @@ class _MyGameState extends State<MyGame> {
   String textoInformativo = 'Vamos começar?';
   bool jogoIniciado = false;
   int jogadas = 0;
+  int victoriesX = 0;
+  int defeatsX = 0;
+  int victoriesO = 0;
+  int defeatsO = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +84,14 @@ class _MyGameState extends State<MyGame> {
                       opacity: jogoIniciado ? 0 : 1, child: btInicio())),
             ],
           ),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Text(
+              'Vitórias X: $victoriesX | Derrotas X: $defeatsX\n'
+              'Vitórias O: $victoriesO | Derrotas O: $defeatsO',
+              style: const TextStyle(fontSize: 20, color: Colors.black),
+            ),
+          ),
         ],
       ),
     );
@@ -129,20 +141,30 @@ class _MyGameState extends State<MyGame> {
     );
   }
 
-  //logica do click
   void clique({required int linha, required int coluna}) {
     jogadas++;
     grade[linha][coluna] = jogadorAtual;
     bool existeVencedor =
         verificaVencedor(jogador: jogadorAtual, linha: linha, coluna: coluna);
 
-    if (existeVencedor) {
+    if (existeVencedor) { 
+      print("entrou no vencedor");
       textoInformativo = '$jogadorAtual Venceu!';
       jogoIniciado = false;
+
+      if (jogadorAtual == 'X') {
+        victoriesX++;
+        defeatsO++;
+      } else {
+        victoriesO++;
+        defeatsX++;
+      }
     } else if (existeVencedor == false && jogadas == 9) {
+      print("entrou no empate");
       textoInformativo = 'Empate!';
       jogoIniciado = false;
     } else {
+      print("entrou no else");
       if (jogadorAtual == 'X') {
         jogadorAtual = 'O';
       } else {
@@ -155,14 +177,14 @@ class _MyGameState extends State<MyGame> {
   bool verificaVencedor(
       {required String jogador, required int linha, required int coluna}) {
     bool venceu = true;
-    //verfica linha
+
     for (int i = 0; i < 3; i++) {
       if (grade[linha][i] != jogador) {
         venceu = false;
         break;
       }
     }
-    //verifica coluna
+
     if (venceu == false) {
       for (int j = 0; j < 3; j++) {
         if (grade[j][coluna] != jogador) {
@@ -174,7 +196,6 @@ class _MyGameState extends State<MyGame> {
       }
     }
 
-    //verifica diagonal
     if (venceu == false) {
       if (grade[1][1] == jogador) {
         if (grade[0][0] == jogador && grade[2][2] == jogador) {
